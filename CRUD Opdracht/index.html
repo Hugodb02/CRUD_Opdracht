@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Oefening</title>
+	<link rel="stylesheet" type="text/css" href="styles/index.css">
+	<script type="text/javascript" charset="utf-8" src="scripts/index.js"></script>
+</head>
+<body>
+<h1>cDMN Tabellen Beheer</h1>
+<div>
+	<h2>Kolom Types</h2>
+	<input type="text" id="columnTypeName" placeholder="Kolom Naam">
+	<input type="text" id="columnTypeDescription" placeholder="Beschrijving">
+	<button id="addColumnTypeButton">Toevoegen</button>
+	<ul id="columnTypesList"></ul>
+</div>
+<div>
+	<h2>cDMN Tabel Types</h2>
+	<input type="text" id="tableTypeName" placeholder="Tabel Type Naam">
+	<select id="tableTypeFixed">
+		<option value="fixed">Vast</option>
+		<option value="variable">Variabel</option>
+	</select>
+	<input type="number" id="tableTypeColumnCount" placeholder="Aantal Kolommen (bij vast)">
+	<button id="addTableTypeButton">Toevoegen</button>
+	<ul id="tableTypesList"></ul>
+</div>
+<div>
+	<h2>cDMN Tabellen</h2>
+	<input type="text" id="tableName" placeholder="Tabel Naam">
+	<select id="tableTypeSelect"></select>
+	<button id="addTableButton">Tabel Toevoegen</button>
+	<ul id="tablesList"></ul>
+</div>
+<div id="editTableSection" style="display:none;">
+	<h2>Bewerk cDMN Tabel</h2>
+	<h3 id="editTableName"></h3>
+	<input type="text" id="columnName" placeholder="Kolom Naam">
+	<select id="columnTypeSelect"></select>
+	<button id="addColumnButton">Kolom Toevoegen</button>
+	<ul id="columnsList"></ul>
+	<h3>Rijen</h3>
+	<button id="addRowButton">Rij Toevoegen</button>
+	<ul id="rowsList"></ul>
+	<button id="saveTableButton">Opslaan</button>
+</div>
+</body>
+</html>
