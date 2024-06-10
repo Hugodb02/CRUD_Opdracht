@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        html, body {
+            height: 100%;
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        header {
+            background-color: black;
+            color: white;
+            padding: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            width: 100%;
+            z-index: 1001;
+        }
+
+        header h1 {
+            margin: 0;
+        }
+
+        header button {
+            background-color: transparent;
+            color: white;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 2px solid #ddd;
+            padding: 10px;
+            text-align: left;
+            transition: background-color 0.3s;
+            white-space: nowrap;
+        }
+
+        th {
+            background-color: #f2f2f2;
+            border-radius: 10px 10px 0 0;
+        }
+
+        td {
+            border-radius: 0 0 10px 10px;
+        }
+
+        #searchContainer {
+            position: relative;
+            width:auto;
+            margin-bottom: 5px;
+            margin-left: 10px;
+            margin-top: 65px;
+        }
+
+        #searchInput {
+            width: calc(100% - 30px);
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding-left: 40px; /* Add padding for the magnifying glass */
+            box-sizing: border-box;
+        }
+
+        #searchIcon {
+            position: absolute;
+            top: 50%;
+            left: 10px;
+            transform: translateY(-50%);
+            color: #777; /* Set color of the Font Awesome icon */
+        }
+
+
+        .edit-icon {
+            cursor: pointer;
+            color: blue;
+        }
+
+        .modal {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    background-color: white;
+    border: 2px solid black;
+    z-index: 1000;
+    width: 80%;
+    max-width: 400px; /* Stel een max-width in voor het geval dat het scherm erg breed is */
+    max-height: 80vh; /* Gebruik 80% van de beschikbare viewporthoogte */
+    overflow-y: auto;
+    box-sizing: border-box;
+}
+
+.modal form {
+    display: grid;
+    gap: 10px;
+}
+
+.modal input,
+.modal select,
+.modal fieldset {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+}
+
+.modal fieldset {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.modal legend {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.modal button[type="submit"] {
+    background-color: green;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+/* Stijl voor de Annuleren-knop */
+.modal button[type="button"] {
+    background-color: red;
+    color: white;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.modal button {
+    background-color: red;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+.modal button[type="submit"],
+.modal button[type="button"] {
+    width: 100%; /* Maak de knoppen 100% breedte van de container */
+    box-sizing: border-box; /* Voorkomt dat padding de totale breedte vergroot */
+    margin-bottom: 10px; /* Voeg wat ruimte toe onder de knoppen */
+    background-color: green; /* Achtergrondkleur voor Opslaan-knop */
+    color: white; /* Tekstkleur voor Opslaan-knop */
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.modal button:hover {
+    background-color: gray;
+}
+
+body.modal-open {
+    overflow: hidden;
+}
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Studentenlijst</h1>
+        <button onclick="goBack()">Terug</button>
+    </header>
+
+    <main>
+        <!-- Zoekfilter -->
+        <div id="searchContainer">
+            <i id="searchIcon" class="fas fa-search"></i> <!-- Font Awesome search icon -->
+            <input type="text" id="searchInput" oninput="filterTable()" placeholder="Zoek op naam, adres, faculteit, opleiding, vakken, modules...">
+        </div>
+
+        <table id="studentTable">
+            <thead>
+                <tr>
+                    <th>Voornaam</th>
+                    <th>Achternaam</th>
+                    <th>Rijksregisternummer</th>
+                    <th>Adres</th>
+                    <th>Academiejaar</th>
+                    <th>Faculteit</th>
+                    <th>Opleiding</th>
+                    <th>Vakken</th>
+                    <th>Modules</th>
+                    <th>Bewerken</th>
+                </tr>
+            </thead>
+            <tbody id="studentTableBody"></tbody>
+        </table>
+    </main>
+
+    <div class="modal-overlay" id="modalOverlay"></div>
+    <div class="modal" id="editModal">
+        <h2>Bewerk Student</h2>
+        <form onsubmit="saveChanges(event)">
+            <label for="editFirstName">Voornaam:</label>
+            <input type="text" id="editFirstName" required>
+    
+            <label for="editLastName">Achternaam:</label>
+            <input type="text" id="editLastName" required>
+    
+            <label for="editRijksregisternummer">Rijksregisternummer:</label>
+            <input type="number" id="editRijksregisternummer" required>
+
+            <label for="editAddress">Adres:</label>
+            <input type="text" id="editAddress" required>
+    
+            <label for="editAcademiejaar">Academiejaar:</label>
+            <select id="editAcademiejaar" required>
+                <option value="2023-24">2023-24</option>
+                <option value="2024-25">2024-25</option>
+                <option value="2025-26">2025-26</option>
+            </select>
+    
+            <label for="editOpleidingSoort">Soort Opleiding:</label>
+            <select id="editOpleidingSoort" required onchange="updateFacultiesForEdit()">
+                <option value=" "> </option>
+                <option value="Graduaatsopleidingen">Graduaatsopleidingen</option>
+                <option value="Professioneel gerichte bacheloropleidingen">Professioneel gerichte bacheloropleidingen</option>
+                <option value="Bacheloropleiding die volgt op een bacheloropleiding">Bacheloropleiding die volgt op een bacheloropleiding</option>
+                <option value="Academisch gerichte bacheloropleidingen">Academisch gerichte bacheloropleidingen</option>
+                <option value="Masteropleiding">Masteropleiding</option>
+                <option value="Postgraduaatsopleiding">Postgraduaatsopleiding</option>
+                <option value="Specifieke lerarenopleidingen">Specifieke lerarenopleidingen</option>
+                <option value="Bij- of nascholingsprogramma's">Bij- of nascholingsprogramma's</option>
+            </select>
+    
+            <label for="editFaculty">Faculteit:</label>
+            <select id="editFaculty" required onchange="updateStudyProgramsForEdit()">
+            <!-- Options will be dynamically filled by JavaScript -->
+            </select>
+    
+            <label for="editStudyProgram">Opleiding:</label>
+            <select id="editStudyProgram" required>
+            <!-- Options will be dynamically filled by JavaScript -->
+            </select>
+    
+            <label for="editCourses">Vakken:</label>
+            <fieldset id="editCourses">
+                <!-- Example courses -->
+                <label><input type="checkbox" name="course" value="Voorbeeld vak 1"> Voorbeeld vak 1</label>
+                <label><input type="checkbox" name="course" value="Voorbeeld vak 2"> Voorbeeld vak 2</label>
+                <label><input type="checkbox" name="course" value="Voorbeeld vak 3"> Voorbeeld vak 3</label>
+                <!-- Add more courses here if needed -->
+            </fieldset>
+    
+            <label for="editModules">Modules:</label>
+            <select id="editModules" required>
+                <option value="Voorbeeld module 1">Voorbeeld module 1</option>
+                <option value="Voorbeeld module 2">Voorbeeld module 2</option>
+                <option value="Voorbeeld module 3">Voorbeeld module 3</option>
+                <option value="Voorbeeld module 4">Voorbeeld module 4</option>
+                <option value="Voorbeeld module 5">Voorbeeld module 5</option>
+            </select>
+    
+            <!-- Add other editable fields here -->
+    
+            <button type="submit">Opslaan</button>
+        </form>
+        <button onclick="closeModal()">Annuleren</button>
+    </div>
+
+
+    <script>
+        var rowIndex;
+        var lastDeletedStudent;
+        var originalStudentData;
+
+        function goBack() {
+        window.location.href = "InschrijvingStudent.html"
+        }
+
+        // Laad alle studentgegevens uit de lokale opslag
+        var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+
+        // Toon alle studentgegevens in de tabel
+        displayAllStudentsData(allStudentsData);
+
+        function displayAllStudentsData(allStudentsData) {
+        var tableBody = document.getElementById("studentTableBody");
+
+        // Loop door alle studenten en voeg elke student toe aan de tabel
+        allStudentsData.forEach(function(studentData, index) {
+            var newRow = tableBody.insertRow();
+
+            // Voeg cellen toe met de gegevens van de student
+            newRow.insertCell(0).textContent = studentData.firstName;
+            newRow.insertCell(1).textContent = studentData.lastName;
+            newRow.insertCell(2).textContent = studentData.rijksregisternummer;
+            newRow.insertCell(3).textContent = studentData.address;
+            newRow.insertCell(4).textContent = studentData.academiejaar;
+            newRow.insertCell(5).textContent = studentData.faculty;
+            newRow.insertCell(6).textContent = studentData.studyProgram;
+            newRow.insertCell(7).textContent = studentData.courses;
+            newRow.insertCell(8).textContent = studentData.modules;
+
+            // Voeg bewerkingsicoon toe aan de 7e cel
+            var editIcon = createIconButton("&#9998;", "blue", function() {
+                openEditDialog(index);
+            });
+
+            // Voeg verwijdericoon toe aan dezelfde cel
+            var deleteIcon = createIconButton("&#128465;", "red", function() {
+                deleteStudent(index);
+            });
+
+            var editCell = newRow.insertCell(9);
+            editCell.appendChild(editIcon);
+            editCell.appendChild(document.createTextNode("\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0\u00A0")); // Voegt tien niet-afbrekende spaties toe
+            editCell.appendChild(deleteIcon);
+        });
+    }
+
+    // Functie om een algemeen bewerkingsicoon te maken
+    function createIconButton(iconUnicode, color, clickHandler) {
+        var icon = document.createElement("span");
+        icon.innerHTML = iconUnicode;
+        icon.className = "edit-icon";
+        icon.style.color = color;
+        icon.style.cursor = "pointer";
+        icon.onclick = clickHandler;
+        return icon;
+    }
+
+    // Functie om een student te verwijderen
+    function deleteStudent(index) {
+            var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+            lastDeletedStudent = allStudentsData[index]; // Bewaar de gegevens van de verwijderde student
+            allStudentsData.splice(index, 1); // Verwijder de student op de opgegeven index
+            localStorage.setItem("students", JSON.stringify(allStudentsData));
+            alertWithUndo("Student verwijderd!", index); // Toon een alert met undo-optie
+        }
+
+        // Functie om een alert met undo-optie te tonen
+        function alertWithUndo(message, deletedIndex) {
+            var confirmation = confirm(message);
+
+            if (confirmation) {
+                // Herstel de verwijderde student
+                if (lastDeletedStudent) {
+                  location.reload(); // Vernieuw de pagina als er geen undo wordt uitgevoerd  
+                }
+            } else {
+                var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+                    allStudentsData.splice(deletedIndex, 0, lastDeletedStudent); // Voeg de student terug in
+                    localStorage.setItem("students", JSON.stringify(allStudentsData));
+                    // displayAllStudentsData(allStudentsData); // Werk de tabel opnieuw bij
+                    location.reload(); 
+            }
+        }
+
+        
+
+        // Filtertabel op basis van zoekinput
+        function filterTable() {
+            var input, filter, table, tbody, tr, td, i, txtValue;
+            input = document.getElementById("searchInput");
+            filter = input.value.toUpperCase();
+            table = document.getElementById("studentTable");
+            tbody = document.getElementById("studentTableBody");
+            tr = tbody.getElementsByTagName("tr");
+
+            // Loop door alle rijen en verberg degene die niet overeenkomen met de zoekopdracht
+            for (i = 0; i < tr.length; i++) {
+                var found = false;
+                for (var j = 0; j < tr[i].cells.length; j++) {
+                    td = tr[i].cells[j];
+                    if (td) {
+                        txtValue = td.textContent || td.innerText;
+                        if (txtValue.toUpperCase().indexOf(filter) > -1) {
+                            found = true;
+                            break;
+                        }
+                    }
+                }
+                if (found) {
+                    tr[i].style.display = "";
+                } else {
+                    tr[i].style.display = "none";
+                }
+            }
+        }
+
+         // Functie om het bewerkingsvenster te openen
+         function openEditDialog(index) {
+            var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+            var studentData = allStudentsData[index];
+
+            rowIndex = index;
+            originalStudentData = { ...studentData };
+
+            // Vul de invoervelden van het modale venster met de huidige waarden van de geselecteerde student
+            document.getElementById("editFirstName").value = studentData.firstName;
+            document.getElementById("editLastName").value = studentData.lastName;
+            document.getElementById("editRijksregisternummer").value = studentData.rijksregisternummer;
+            document.getElementById("editAddress").value = studentData.address;
+            document.getElementById("editAcademiejaar").value = studentData.academiejaar;
+            document.getElementById("editFaculty").value = studentData.faculty;
+            document.getElementById("editStudyProgram").value = studentData.studyProgram;
+            document.getElementById("editCourses").value = studentData.courses;
+            document.getElementById("editModules").value = studentData.modules;
+            
+
+            // Hier kun je de overige bewerkbare velden vullen
+
+            // Toon het modale venster en de overlay
+            document.getElementById("editModal").style.display = "block";
+            document.getElementById("modalOverlay").style.display = "block";
+        }
+
+        // Functie om het bewerkingsvenster te sluiten
+        function closeModal() {
+            // Verberg het modale venster en de overlay
+            document.getElementById("editModal").style.display = "none";
+            document.getElementById("modalOverlay").style.display = "none";
+        }
+
+        function undoEditChanges() {
+            var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+            allStudentsData[rowIndex] = originalStudentData; // Herstel de originele gegevens
+            localStorage.setItem("students", JSON.stringify(allStudentsData));
+            displayAllStudentsData(allStudentsData); // Werk de tabel opnieuw bij
+            closeModal(); // Sluit het modale venster
+        }
+
+        // Functie om wijzigingen op te slaan
+        function saveChanges(event) {
+            event.preventDefault();
+
+            var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+            var studentData = allStudentsData[rowIndex];
+
+            console.log("Oude waarden:", originalStudentData);
+
+            // Werk de gegevens van de geselecteerde student bij
+            studentData.firstName = document.getElementById("editFirstName").value;
+            studentData.lastName = document.getElementById("editLastName").value;
+            studentData.rijksregisternummer = document.getElementById("editRijksregisternummer").value;
+            studentData.address = document.getElementById("editAddress").value;
+            studentData.academiejaar = document.getElementById("editAcademiejaar").value;
+            studentData.faculty = document.getElementById("editFaculty").value;
+            studentData.studyProgram = document.getElementById("editStudyProgram").value;
+            studentData.courses = document.getElementById("editCourses").value;
+            studentData.modules = document.getElementById("editModules").value;
+
+            // Hier kun je de overige bewerkbare velden bijwerken
+            console.log("Nieuwe waarden:", studentData);
+
+            // Werk de lokale opslag bij
+            localStorage.setItem("students", JSON.stringify(allStudentsData));
+
+            // Werk de tabel opnieuw bij
+            displayAllStudentsData(allStudentsData);
+
+            // Toon een melding dat de wijzigingen zijn opgeslagen
+            alertWithUndo("Aanpassingen opgeslagen!", rowIndex, originalStudentData);
+            // Sluit het modale venster
+            closeModal();
+        }
+
+        // Functie om een alert met undo-optie te tonen na bewerking
+        function alertWithUndo(message, editedIndex, originalData) {
+            var confirmation = confirm(message);
+
+            if (confirmation) {
+                location.reload(); // Vernieuw de pagina als er geen undo wordt uitgevoerd
+            } else {
+              var allStudentsData = JSON.parse(localStorage.getItem("students")) || [];
+                allStudentsData[editedIndex] = originalData; // Herstel de originele gegevens
+                localStorage.setItem("students", JSON.stringify(allStudentsData)); 
+                location.reload();
+            }
+        }
+
+        function updateFacultiesForEdit() {
+    var opleidingSoort = document.getElementById("editOpleidingSoort").value;
+    var facultySelect = document.getElementById("editFaculty");
+
+    // Leegmaken van de bestaande opties
+    facultySelect.innerHTML = "";
+
+    // Opties toevoegen op basis van de geselecteerde opleidingsoort
+    switch (opleidingSoort) {
+        case "Graduaatsopleidingen":
+            addOption(facultySelect, " ");
+            addOption(facultySelect, "Departement Lerarenopleiding");
+            addOption(facultySelect, "GO5 by HOGENT");
+            break;
+            case "Professioneel gerichte bacheloropleidingen":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "Departement Biowetenschappen en Industriële Technologiën");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        addOption(facultySelect, "Departement Bedrijf en Organisatie");
+        addOption(facultySelect, "Departement IT en Digitale Innovatie");
+        addOption(facultySelect, "Departement Omgeving");
+        addOption(facultySelect, "Departement Sociaal-Agogisch Werk");
+        addOption(facultySelect, "Departement Gezondheidszorg");
+        addOption(facultySelect, "Departement Lerarenopleiding");
+        break;
+        case "Bacheloropleiding die volgt op een bacheloropleiding":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        addOption(facultySelect, "Departement Bedrijf en Organisatie");
+        addOption(facultySelect, "Departement Gezondheidszorg");
+        break;
+        case "Academisch gerichte bacheloropleidingen":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        break;
+        case "Masteropleiding":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        break;
+        case "Postgraduaatsopleiding":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        addOption(facultySelect, "Departement Bedrijf en Organisatie");
+        addOption(facultySelect, "Departement IT en Digitale Innovatie");
+        addOption(facultySelect, "Departement Omgeving");
+        addOption(facultySelect, "Departement Sociaal-Agogisch Werk");
+        addOption(facultySelect, "Departement Gezondheidszorg");
+        addOption(facultySelect, "Departement Lerarenopleiding");
+        break;
+        case "Specifieke lerarenopleidingen":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        break;
+        case "Bij- of nascholingsprogramma's":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "Departement Biowetenschappen en Industriële Technologiën");
+        addOption(facultySelect, "Departement Omgeving");
+        break;
+      // Voeg hier cases toe voor andere opleidingstypes
+    }
+  
+        // Handle other cases as in the original function
+
+    // Trigger the update of study programs as well
+    updateStudyProgramsForEdit();
+}
+
+function updateStudyProgramsForEdit() {
+    var faculty = document.getElementById("editFaculty").value;
+    var opleidingSoort = document.getElementById("editOpleidingSoort").value;
+    var studyProgramSelect = document.getElementById("editStudyProgram");
+
+    // Leegmaken van de bestaande opties
+    studyProgramSelect.innerHTML = "<option value=''> </option>";
+
+    // Opties toevoegen op basis van de geselecteerde faculteit en opleidingsoort
+    switch (faculty) {
+            case "Departement Biowetenschappen en Industriële Technologiën":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":                
+                addOption(studyProgramSelect, "Bachelor agro- en biotechnologie");
+                addOption(studyProgramSelect, "Bachelor chemie");
+                addOption(studyProgramSelect, "Bachelor elektromechanica");
+                addOption(studyProgramSelect, "Bachelor modetechnologie");
+                addOption(studyProgramSelect, "Bachelor textieltechnologie");
+                addOption(studyProgramSelect, "MicroDegree DierlijkePraktijk (TEST)");
+                addOption(studyProgramSelect, "IC AgroFood Sustainability");
+                addOption(studyProgramSelect, "IC Electromechanics");
+                  break;
+
+                  case "Bij- of nascholingsprogramma's":
+                  addOption(studyProgramSelect, "Permanente vorming proefdierkunde");
+                  break;
+
+                  
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "School of Arts KASK-Koninklijk Conservatorium":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor in de interieurvormgeving (incl. afstandsonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor in de landschaps- en tuinarchitectuur");
+                  break;
+
+                  case "Bacheloropleiding die volgt op een bacheloropleiding":
+                  addOption(studyProgramSelect, "Bachelor in de landschapsontwikkeling");
+                  break;
+
+                  case "Academisch gerichte bacheloropleiding":
+                  addOption(studyProgramSelect, "Bachelor in de audiovisuele kunsten");
+                  addOption(studyProgramSelect, "Bachelor in de beeldende kunsten");
+                  addOption(studyProgramSelect, "Bachelor in de muziek");
+                  addOption(studyProgramSelect, "Bachelor in het drama");
+                  break;
+
+                  case "Masteropleidingen":
+                  addOption(studyProgramSelect, "Educatieve master in de audiovisuele en beeldende kunsten");
+                  addOption(studyProgramSelect, "Educatieve master in de muziek en podiumkunsten");
+                  addOption(studyProgramSelect, "Master in de audiovisuele kunsten");
+                  addOption(studyProgramSelect, "Master in de beeldende kunsten");
+                  addOption(studyProgramSelect, "Master in de muziek");
+                  addOption(studyProgramSelect, "Master in het drama");
+                  addOption(studyProgramSelect, "Master of Audiovisual Arts (English Program)");
+                  addOption(studyProgramSelect, "Master of Drama");
+                  addOption(studyProgramSelect, "Master of Fine Arts (English Program)");
+                  addOption(studyProgramSelect, "Master of Music (English Program)");
+                  addOption(studyProgramSelect, "Master in de hedendaagse muziek");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat Curatorial Studies");
+                  addOption(studyProgramSelect, "Postgraduaat Musical Performance Practice");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement Bedrijf en Organisatie":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor bedrijfsmanagement (Aalst)");
+                  addOption(studyProgramSelect, "Bachelor bedrijfsmanagement (Gent, incl. afstandsonderwijs AF)");
+                  addOption(studyProgramSelect, "Bachelor organisatie & management (voorheen Office management)");
+                  addOption(studyProgramSelect, "Bachelor retailmanagement");
+                  addOption(studyProgramSelect, "IC Business, Retail and Languages");
+                  break;
+
+                case "Bacheloropleiding die volgt op een bacheloropleiding":
+                  addOption(studyProgramSelect, "Bachelor toegepaste fiscaliteit (avondonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor toegepaste fiscaliteit (dagonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor internationaal bedrijfsmanagement");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat Gecertificeerd accountant");
+                  addOption(studyProgramSelect, "Postgraduaat Salesmanagement");
+                  addOption(studyProgramSelect, "Postgraduaat Trendwatching: van trendanalyse tot succesvolle innovatie");
+                  addOption(studyProgramSelect, "Postgraduaat digitale marketing");
+                  addOption(studyProgramSelect, "Postgraduaat ondernemen");
+                  addOption(studyProgramSelect, "Postgraduaat verzekeringen: Risk & Claims Management");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement IT en Digitale Innovatie":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor toegepaste informatica ( Aalst)");
+                  addOption(studyProgramSelect, "Bachelor toegepaste informatica (Gent, incl. afstandsonderwijs en virtuele campus)");
+                  addOption(studyProgramSelect, "IC IT");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat IT Management");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+              
+            case "Departement Omgeving":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor houttechnologie");
+                  addOption(studyProgramSelect, "Bachelor vastgoed");
+                  addOption(studyProgramSelect, "IC Digital Tools for Heritage Management");
+                  addOption(studyProgramSelect, "IC Wood Technology");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat GEO-ICT");
+                  addOption(studyProgramSelect, "Postgraduaat vastgoedbeheer");
+                  break;
+
+                  case "Bij- of nascholingsprogramma's":
+                  addOption(studyProgramSelect, "Basisopleiding energiedeskundige type A");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement Sociaal-Agogisch Werk":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor orthopedagogie (incl. afstandsonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor sociaal werk (incl. afstandsonderwijs)");
+                  addOption(studyProgramSelect, "IC Social Work");
+                  addOption(studyProgramSelect, "IC Social educational care work");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat Human Resources Management");
+                  addOption(studyProgramSelect, "Postgraduaat coaching, intervisie en teambegeleiding");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+              case "Departement Gezondheidszorg":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+            addOption(studyProgramSelect, "Bachelor biomedische laboratoriumtechnologie");
+            addOption(studyProgramSelect, "Bachelor ergotherapie");
+            addOption(studyProgramSelect, "Bachelor logopedie en audiologie");
+            addOption(studyProgramSelect, "Bachelor verpleegkunde");
+            addOption(studyProgramSelect, "Bachelor verpleegkunde (duaal traject)");
+            addOption(studyProgramSelect, "Bachelor voedings- en dieetkunde");
+            addOption(studyProgramSelect, "IC Audiology");
+            addOption(studyProgramSelect, "IC Nursing");
+            addOption(studyProgramSelect, "IC Occupational Therapy");
+            addOption(studyProgramSelect, "IC Speech and Language Pathology");
+            break;
+
+            case "Bacheloropleiding die volgt op een bacheloropleiding": 
+            addOption(studyProgramSelect, "Bachelor zorgmanagement");
+            break;
+
+            case "Postgraduaatsopleidingen":
+    addOption(studyProgramSelect, "Postgraduaat Intensieve Zorgen");
+    addOption(studyProgramSelect, "Postgraduaat Spoedgevallenzorg");
+    addOption(studyProgramSelect, "Postgraduaat diabeteseducator");
+    addOption(studyProgramSelect, "Postgraduaat endoscopieverpleegkundige");
+    addOption(studyProgramSelect, "Postgraduaat oncologische diëtetiek");
+    addOption(studyProgramSelect, "Postgraduaat praktijkgerichte en contextuele benadering binnen de begeleiding van eetstoornissen");
+    break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement Lerarenopleiding":
+              switch (opleidingSoort) {
+                case "Graduaatsopleidingen":
+                addOption(studyProgramSelect, "Educatief graduaat secundair onderwijs");
+                  break;
+
+                case "Professioneel gerichte bacheloropleidingen":
+                addOption(studyProgramSelect, "Educatieve bachelor kleuteronderwijs (incl. afstandsonderwijs)");
+                addOption(studyProgramSelect, "Educatieve bachelor lager onderwijs (incl. afstandsonderwijs)");
+                addOption(studyProgramSelect, "Educatieve bachelor secundair onderwijs (incl. lichamelijke opvoeding en bewegingsrecreatie, incl. afstandsonderwijs)");
+                addOption(studyProgramSelect, "Verkorte educatieve bachelor secundair onderwijs (incl. afstandsonderwijs)");
+                  break;
+                  
+                case "Postgraduaatsopleidingen":
+                addOption(studyProgramSelect, "Postgraduaat Advanced Personal Trainer");
+                addOption(studyProgramSelect, "Postgraduaat Freinet");
+                addOption(studyProgramSelect, "Postgraduaat niet-confessionele zedenleer");
+                break;
+                // Voeg andere cases toe indien nodig
+
+              }
+              break;
+            case "GO5 by HOGENT":
+              switch (opleidingSoort) {
+                case "Graduaatsopleidingen":
+                addOption(studyProgramSelect, "Graduaat HVAC-systemen");
+                addOption(studyProgramSelect, "Graduaat accounting administration (dag- en avond/weekendonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat accounting administration (dagonderwijs Lokeren)");
+                addOption(studyProgramSelect, "Graduaat accounting administration Aalst");
+                addOption(studyProgramSelect, "Graduaat biotechnologie");
+                addOption(studyProgramSelect, "Graduaat bouwkundig tekenen");
+                addOption(studyProgramSelect, "Graduaat elektromechanische systemen (dag- of avondonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat juridisch-administratieve ondersteuning (weekendonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat marketing- en communicatiesupport (dagonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat productiebeheer");
+                addOption(studyProgramSelect, "Graduaat programmeren (dag- en avondonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat programmeren (dagonderwijs Aalst)");
+                addOption(studyProgramSelect, "Graduaat systeem- en netwerkbeheer (dag- en avondonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat systeem- en netwerkbeheer (dagonderwijs Aalst)");
+                addOption(studyProgramSelect, "Graduaat werforganisatie");
+                addOption(studyProgramSelect, "Graduaat winkelmanagement (dagonderwijs Gent)");
+                break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+            // Voeg cases toe voor andere faculteiten
+          }
+        
+}     
+        
+  // Hulpprogrammafunctie om een optie toe te voegen aan een select-element
+  function addOption(selectElement, optionText) {
+    var option = document.createElement("option");
+    option.text = optionText;
+    selectElement.add(option);
+  }
+
+        
+    </script>
+</body>
+</html>

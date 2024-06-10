@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inloggen - Hogeschool Gent Schooladministratie</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="login-container">
+        <h1>Inloggen</h1>
+        <form id="loginForm">
+            <label for="username">Gebruikersnaam:</label>
+            <input type="text" id="username" name="username" required>
+
+            <label for="password">Wachtwoord:</label>
+            <input type="password" id="password" name="password" required>
+
+            <Button class="loginButton" type="button" onclick="login()">Inloggen</Button>
+        </form>
+    </div>
+
+    <script>
+        function login() {
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
+
+            if (username === "admin" && password === "wachtwoord") {
+                alert("Inloggen geslaagd!");
+                window.location.href = "HoGentSchooladministratie.html";
+            } else {
+                alert("Inloggen mislukt. Controleer uw gebruikersnaam en wachtwoord.");
+            }
+        }
+    </script>
+</body>
+</html>

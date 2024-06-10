@@ -1,0 +1,168 @@
+/* styles.css */
+
+header {
+    background-color: black;
+    color: white;
+    padding: 10px;
+    padding-bottom: 2px;
+    padding-top: 2px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+}
+
+main {
+    margin: 20px;
+}
+
+nav {
+    background-color: #555;
+    padding: 20px;
+}
+
+nav ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 20px;
+    align-items: center; /* Voeg align-items toe om verticaal te centreren */
+    height: 100%; /* Maak de hoogte van de container 100% */
+}
+
+nav li {
+    box-sizing: border-box;
+}
+
+nav a {
+    text-decoration: none;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    height: 150px;
+}
+
+nav a i {
+    margin-bottom: 8px;
+}
+
+/*inlogpagina*/
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.login-container {
+    max-width: 400px;
+    margin: 100px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.login-container h1{
+    color: black;
+}
+
+h1 {
+    text-align: center;
+    color: white;
+}
+
+form {
+    max-width: 600px;
+    margin: 0 auto;
+    background-color: #f4f4f4;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+}
+
+input {
+    padding: 10px;
+    margin-bottom: 16px;
+}
+
+button {
+    background-color: #333;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+Button:hover {
+    background-color: #555;
+}
+
+.logoutButton {
+    background-color: #d9534f;
+    color: white;
+    padding: 8px 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.logoutButton:hover {
+    background-color: #c9302c;
+}
+
+.loginButton {
+    background-color: rgb(1, 167, 1);
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.loginButton:hover {
+    background-color: rgba(0, 128, 0, 0.737);
+}
+
+.inschrijvingsformulier {
+    font-size: 15px; /* Pas deze waarde aan op basis van je voorkeur */
+}
+
+input[type="text"], select {
+    width: 100%; /* Gebruik de volledige breedte van de container */
+    padding: 10px; /* Voeg wat ruimte toe aan de randen voor een beter uiterlijk */
+}
+
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+fieldset {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 15px;
+}

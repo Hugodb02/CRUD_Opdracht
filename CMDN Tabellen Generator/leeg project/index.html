@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>cDMN Tabel Beheer</title>
+<script type="text/javascript" charset="utf-8" src="scripts/index.js"></script>
+  <link rel="stylesheet" type="text/css" href="styles/index.css">
+</head>
+<body>
+<div id="app">
+  <h1>cDMN Tabel Generator</h1>
+
+  <div id="cdmn-table-types">
+    <h2>cDMN Tabel Types</h2>
+    <input type="text" id="cdmn-table-type-name" placeholder="Tabel Type Naam">
+    <input type="number" id="cdmn-table-fixed-columns" placeholder="Aantal Kolommen">
+    <button onclick="addCDMNTableType()">Tabel Type Toevoegen</button>
+    <ul id="cdmn-table-types-list"></ul>
+  </div>
+
+  <div id="cdmn-tables">
+    <h2>cDMN Tabellen</h2>
+    <select id="cdmn-table-type-select"></select>
+    <button onclick="createCDMNTable()">Maak Tabel</button>
+    <button onclick="clearLocalStorage()">Clear LocalStorage</button>
+    <div id="cdmn-tables-list"></div>
+  </div>
+</div>
+<script type="text/javascript" charset="utf-8" src="scripts/index.js"></script>
+</body>
+</html>

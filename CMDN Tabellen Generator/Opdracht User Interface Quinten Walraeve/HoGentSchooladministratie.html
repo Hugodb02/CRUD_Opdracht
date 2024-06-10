@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hogeschool Gent Schooladministratie</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <header>
+        <h1>HoGent Admin</h1>
+        <div class="user-info">
+            <span class="username">admin</span>
+            <button class="logoutButton" id="logoutButton">Uitloggen</button>
+        </div>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="https://www.lipsum.com/"><i class="fas fa-university"></i> Aanmaken Opleiding</a></li>
+            <li><a href="https://www.lipsum.com/"><i class="fas fa-book"></i> Aanmaken Vak</a></li>
+            <li><a href="https://www.lipsum.com/"><i class="fas fa-chalkboard"></i> Aanmaken Vakuitvoering</a></li>
+            <li><a href="https://www.lipsum.com/"><i class="fas fa-user-tie"></i> Aanmaken Docent</a></li>
+            <li><a href="InschrijvingStudent.html"><i class="fas fa-user-graduate"></i> Inschrijving Student</a></li>
+            <li><a href="https://www.lipsum.com/"><i class="fas fa-file-alt"></i> Invullen Evaluatie</a></li>
+        </ul>
+    </nav>
+
+    <script>
+        document.getElementById("logoutButton").addEventListener("click", function() {
+            // Voeg hier de uitlogcode toe, bijvoorbeeld het verwijderen van de sessie
+            // In dit voorbeeld wordt de gebruiker omgeleid naar de startpagina na uitloggen
+            // Je zou deze functionaliteit moeten aanpassen aan jouw specifieke implementatie
+            alert("U bent uitgelogd."); // Simpel voorbeeld, vervang dit met echte uitlogfunctionaliteit
+            window.location.href = "index.html"; // Redirect naar startpagina
+        });
+    </script>
+</body>
+</html>

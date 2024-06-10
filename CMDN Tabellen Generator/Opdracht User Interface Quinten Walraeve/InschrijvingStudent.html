@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inschrijven Student</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Inschrijven Student</h1>
+        <button onclick="goBack()">Terug</button>
+    </header>
+
+    <main>
+        <form class="inschrijvingsformulier" onsubmit="validateAndSubmit(event)">
+            <!-- Hier komen alle inputvelden voor het inschrijven van een student -->
+            <label for="firstName">Voornaam:</label>
+            <input type="text" id="firstName" name="firstName" required>
+
+            <label for="lastName">Achternaam:</label>
+            <input type="text" id="lastName" name="lastName" required>
+
+            <label for="rijksregisternummer">Rijksregisternummer:</label>
+            <input type="number" id="rijksregisternummer" name="rijksregisternummer" required>
+
+            <label for="address">Adres:</label>
+            <input type="text" id="address" name="address" required>
+
+            <label for="academiejaar">Academiejaar:</label>
+            <select id="academiejaar" name="academiejaar" required>
+              <option value=" "> </option>
+              <option value="2023-24">2023-24</option>
+              <option value="2024-25">2024-25</option>
+              <option value="2025-26">2025-26</option>
+            </select>
+           
+            
+
+            <label for="opleidingSoort">Soort Opleiding:</label>
+            <!-- Gebruik een select-element voor het soort opleiding -->
+            <select id="opleidingSoort" name="opleidingSoort" required onchange="updateFaculties()">
+              <option value=""> </option>
+              <option value="Graduaatsopleidingen">Graduaatsopleidingen</option>
+              <option value="Professioneel gerichte bacheloropleidingen">Professioneel gerichte bacheloropleidingen</option>
+              <option value="Bacheloropleiding die volgt op een bacheloropleiding">Bacheloropleiding die volgt op een bacheloropleiding</option>
+              <option value="Academisch gerichte bacheloropleidingen">Academisch gerichte bacheloropleidingen</option>
+              <option value="Masteropleiding">Masteropleiding</option>
+              <option value="Postgraduaatsopleiding">Postgraduaatsopleiding</option>
+              <option value="Specifieke lerarenopleidingen">Specifieke lerarenopleidingen</option>
+              <option value="Bij- of nascholingsprogramma's">Bij- of nascholingsprogramma's</option>
+            </select>
+
+            <label for="faculty">Faculteit:</label>
+            <select id="faculty" name="faculty" required onchange="updateStudyPrograms()"></select>
+            <!-- Opties worden dynamisch ingevuld door JavaScript -->
+            </select>
+
+            <label for="studyProgram">Opleiding:</label>
+            <select id="studyProgram" name="studyProgram" required>
+              <!-- Opties worden dynamisch ingevuld door JavaScript -->
+            </select>
+
+            <label for="courses">Vakken:</label>
+              <fieldset id="courses">
+                  <!-- Voorbeeldvakken -->
+                  <label><input type="checkbox" name="course" value="Voorbeeld vak 1"> Voorbeeld vak 1</label>
+                  <label><input type="checkbox" name="course" value="Voorbeeld vak 2"> Voorbeeld vak 2</label>
+                  <label><input type="checkbox" name="course" value="Voorbeeld vak 3"> Voorbeeld vak 3</label>
+                  <!-- Voeg hier meer vakken toe indien nodig -->
+              </fieldset>
+
+              <label for="modules">Modules:</label>
+              <select id="modules" name="modules" required>
+                  <option value="">Kies een module</option>
+                  <option value="Voorbeeld module 1">Voorbeeld module 1</option>
+                  <option value="Voorbeeld module 2">Voorbeeld module 2</option>
+                  <option value="Voorbeeld module 3">Voorbeeld module 3</option>
+                  <option value="Voorbeeld module 4">Voorbeeld module 4</option>
+                  <option value="Voorbeeld module 5">Voorbeeld module 5</option>
+              </select>
+
+            <!-- Voeg hier eventueel andere inputvelden toe -->
+
+            <button type="submit">Inschrijven</button>
+        </form>
+
+        <!-- Knop om naar de pagina met alle studentgegevens te gaan -->
+        <button onclick="viewAllStudents()">Bekijk alle studentgegevens</button>
+    </main>
+
+    <script>
+        function goBack() {
+            window.location.href = "HoGentSchooladministratie.html"
+        }
+
+        // Functie om de faculteiten bij te werken op basis van de geselecteerde opleidingsoort
+  function updateFaculties() {
+    var opleidingSoort = document.getElementById("opleidingSoort").value;
+    var facultySelect = document.getElementById("faculty");
+
+    // Leegmaken van de bestaande opties
+    facultySelect.innerHTML = "";
+
+    // Opties toevoegen op basis van de geselecteerde opleidingsoort
+    switch (opleidingSoort) {
+      case "Graduaatsopleidingen":
+        addOption(facultySelect, " ");  
+        addOption(facultySelect, "Departement Lerarenopleiding");
+        addOption(facultySelect, "GO5 by HOGENT");
+        break;
+      case "Professioneel gerichte bacheloropleidingen":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "Departement Biowetenschappen en Industriële Technologiën");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        addOption(facultySelect, "Departement Bedrijf en Organisatie");
+        addOption(facultySelect, "Departement IT en Digitale Innovatie");
+        addOption(facultySelect, "Departement Omgeving");
+        addOption(facultySelect, "Departement Sociaal-Agogisch Werk");
+        addOption(facultySelect, "Departement Gezondheidszorg");
+        addOption(facultySelect, "Departement Lerarenopleiding");
+        break;
+        case "Bacheloropleiding die volgt op een bacheloropleiding":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        addOption(facultySelect, "Departement Bedrijf en Organisatie");
+        addOption(facultySelect, "Departement Gezondheidszorg");
+        break;
+        case "Academisch gerichte bacheloropleidingen":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        break;
+        case "Masteropleiding":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        break;
+        case "Postgraduaatsopleiding":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "School of Arts KASK-Koninklijk Conservatorium");
+        addOption(facultySelect, "Departement Bedrijf en Organisatie");
+        addOption(facultySelect, "Departement IT en Digitale Innovatie");
+        addOption(facultySelect, "Departement Omgeving");
+        addOption(facultySelect, "Departement Sociaal-Agogisch Werk");
+        addOption(facultySelect, "Departement Gezondheidszorg");
+        addOption(facultySelect, "Departement Lerarenopleiding");
+        break;
+        case "Specifieke lerarenopleidingen":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        break;
+        case "Bij- of nascholingsprogramma's":
+        // Voeg hier de faculteiten toe voor de specifieke opleiding
+        addOption(facultySelect, " ");
+        addOption(facultySelect, "Departement Biowetenschappen en Industriële Technologiën");
+        addOption(facultySelect, "Departement Omgeving");
+        break;
+      // Voeg hier cases toe voor andere opleidingstypes
+    }
+  }
+
+  function updateStudyPrograms() {
+          var faculty = document.getElementById("faculty").value;
+          var opleidingSoort = document.getElementById("opleidingSoort").value;
+          var studyProgramSelect = document.getElementById("studyProgram");
+
+          // Leegmaken van de bestaande opties
+          studyProgramSelect.innerHTML = "<option value=''> </option>";
+
+          // Opties toevoegen op basis van de geselecteerde faculteit en opleidingsoort
+          switch (faculty) {
+            case "Departement Biowetenschappen en Industriële Technologiën":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":                
+                addOption(studyProgramSelect, "Bachelor agro- en biotechnologie");
+                addOption(studyProgramSelect, "Bachelor chemie");
+                addOption(studyProgramSelect, "Bachelor elektromechanica");
+                addOption(studyProgramSelect, "Bachelor modetechnologie");
+                addOption(studyProgramSelect, "Bachelor textieltechnologie");
+                addOption(studyProgramSelect, "MicroDegree DierlijkePraktijk (TEST)");
+                addOption(studyProgramSelect, "IC AgroFood Sustainability");
+                addOption(studyProgramSelect, "IC Electromechanics");
+                  break;
+
+                  case "Bij- of nascholingsprogramma's":
+                  addOption(studyProgramSelect, "Permanente vorming proefdierkunde");
+                  break;
+
+                  
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "School of Arts KASK-Koninklijk Conservatorium":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor in de interieurvormgeving (incl. afstandsonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor in de landschaps- en tuinarchitectuur");
+                  break;
+
+                  case "Bacheloropleiding die volgt op een bacheloropleiding":
+                  addOption(studyProgramSelect, "Bachelor in de landschapsontwikkeling");
+                  break;
+
+                  case "Academisch gerichte bacheloropleiding":
+                  addOption(studyProgramSelect, "Bachelor in de audiovisuele kunsten");
+                  addOption(studyProgramSelect, "Bachelor in de beeldende kunsten");
+                  addOption(studyProgramSelect, "Bachelor in de muziek");
+                  addOption(studyProgramSelect, "Bachelor in het drama");
+                  break;
+
+                  case "Masteropleidingen":
+                  addOption(studyProgramSelect, "Educatieve master in de audiovisuele en beeldende kunsten");
+                  addOption(studyProgramSelect, "Educatieve master in de muziek en podiumkunsten");
+                  addOption(studyProgramSelect, "Master in de audiovisuele kunsten");
+                  addOption(studyProgramSelect, "Master in de beeldende kunsten");
+                  addOption(studyProgramSelect, "Master in de muziek");
+                  addOption(studyProgramSelect, "Master in het drama");
+                  addOption(studyProgramSelect, "Master of Audiovisual Arts (English Program)");
+                  addOption(studyProgramSelect, "Master of Drama");
+                  addOption(studyProgramSelect, "Master of Fine Arts (English Program)");
+                  addOption(studyProgramSelect, "Master of Music (English Program)");
+                  addOption(studyProgramSelect, "Master in de hedendaagse muziek");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat Curatorial Studies");
+                  addOption(studyProgramSelect, "Postgraduaat Musical Performance Practice");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement Bedrijf en Organisatie":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor bedrijfsmanagement (Aalst)");
+                  addOption(studyProgramSelect, "Bachelor bedrijfsmanagement (Gent, incl. afstandsonderwijs AF)");
+                  addOption(studyProgramSelect, "Bachelor organisatie & management (voorheen Office management)");
+                  addOption(studyProgramSelect, "Bachelor retailmanagement");
+                  addOption(studyProgramSelect, "IC Business, Retail and Languages");
+                  break;
+
+                case "Bacheloropleiding die volgt op een bacheloropleiding":
+                  addOption(studyProgramSelect, "Bachelor toegepaste fiscaliteit (avondonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor toegepaste fiscaliteit (dagonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor internationaal bedrijfsmanagement");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat Gecertificeerd accountant");
+                  addOption(studyProgramSelect, "Postgraduaat Salesmanagement");
+                  addOption(studyProgramSelect, "Postgraduaat Trendwatching: van trendanalyse tot succesvolle innovatie");
+                  addOption(studyProgramSelect, "Postgraduaat digitale marketing");
+                  addOption(studyProgramSelect, "Postgraduaat ondernemen");
+                  addOption(studyProgramSelect, "Postgraduaat verzekeringen: Risk & Claims Management");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement IT en Digitale Innovatie":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor toegepaste informatica ( Aalst)");
+                  addOption(studyProgramSelect, "Bachelor toegepaste informatica (Gent, incl. afstandsonderwijs en virtuele campus)");
+                  addOption(studyProgramSelect, "IC IT");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat IT Management");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+              
+            case "Departement Omgeving":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor houttechnologie");
+                  addOption(studyProgramSelect, "Bachelor vastgoed");
+                  addOption(studyProgramSelect, "IC Digital Tools for Heritage Management");
+                  addOption(studyProgramSelect, "IC Wood Technology");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat GEO-ICT");
+                  addOption(studyProgramSelect, "Postgraduaat vastgoedbeheer");
+                  break;
+
+                  case "Bij- of nascholingsprogramma's":
+                  addOption(studyProgramSelect, "Basisopleiding energiedeskundige type A");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement Sociaal-Agogisch Werk":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+                  addOption(studyProgramSelect, "Bachelor orthopedagogie (incl. afstandsonderwijs)");
+                  addOption(studyProgramSelect, "Bachelor sociaal werk (incl. afstandsonderwijs)");
+                  addOption(studyProgramSelect, "IC Social Work");
+                  addOption(studyProgramSelect, "IC Social educational care work");
+                  break;
+
+                  case "Postgraduaatsopleidingen":
+                  addOption(studyProgramSelect, "Postgraduaat Human Resources Management");
+                  addOption(studyProgramSelect, "Postgraduaat coaching, intervisie en teambegeleiding");
+                  break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+              case "Departement Gezondheidszorg":
+              switch (opleidingSoort) {
+                case "Professioneel gerichte bacheloropleidingen":
+            addOption(studyProgramSelect, "Bachelor biomedische laboratoriumtechnologie");
+            addOption(studyProgramSelect, "Bachelor ergotherapie");
+            addOption(studyProgramSelect, "Bachelor logopedie en audiologie");
+            addOption(studyProgramSelect, "Bachelor verpleegkunde");
+            addOption(studyProgramSelect, "Bachelor verpleegkunde (duaal traject)");
+            addOption(studyProgramSelect, "Bachelor voedings- en dieetkunde");
+            addOption(studyProgramSelect, "IC Audiology");
+            addOption(studyProgramSelect, "IC Nursing");
+            addOption(studyProgramSelect, "IC Occupational Therapy");
+            addOption(studyProgramSelect, "IC Speech and Language Pathology");
+            break;
+
+            case "Bacheloropleiding die volgt op een bacheloropleiding": 
+            addOption(studyProgramSelect, "Bachelor zorgmanagement");
+            break;
+
+            case "Postgraduaatsopleidingen":
+    addOption(studyProgramSelect, "Postgraduaat Intensieve Zorgen");
+    addOption(studyProgramSelect, "Postgraduaat Spoedgevallenzorg");
+    addOption(studyProgramSelect, "Postgraduaat diabeteseducator");
+    addOption(studyProgramSelect, "Postgraduaat endoscopieverpleegkundige");
+    addOption(studyProgramSelect, "Postgraduaat oncologische diëtetiek");
+    addOption(studyProgramSelect, "Postgraduaat praktijkgerichte en contextuele benadering binnen de begeleiding van eetstoornissen");
+    break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+
+            case "Departement Lerarenopleiding":
+              switch (opleidingSoort) {
+                case "Graduaatsopleidingen":
+                addOption(studyProgramSelect, "Educatief graduaat secundair onderwijs");
+                  break;
+
+                case "Professioneel gerichte bacheloropleidingen":
+                addOption(studyProgramSelect, "Educatieve bachelor kleuteronderwijs (incl. afstandsonderwijs)");
+                addOption(studyProgramSelect, "Educatieve bachelor lager onderwijs (incl. afstandsonderwijs)");
+                addOption(studyProgramSelect, "Educatieve bachelor secundair onderwijs (incl. lichamelijke opvoeding en bewegingsrecreatie, incl. afstandsonderwijs)");
+                addOption(studyProgramSelect, "Verkorte educatieve bachelor secundair onderwijs (incl. afstandsonderwijs)");
+                  break;
+                  
+                case "Postgraduaatsopleidingen":
+                addOption(studyProgramSelect, "Postgraduaat Advanced Personal Trainer");
+                addOption(studyProgramSelect, "Postgraduaat Freinet");
+                addOption(studyProgramSelect, "Postgraduaat niet-confessionele zedenleer");
+                break;
+                // Voeg andere cases toe indien nodig
+
+              }
+              break;
+            case "GO5 by HOGENT":
+              switch (opleidingSoort) {
+                case "Graduaatsopleidingen":
+                addOption(studyProgramSelect, "Graduaat HVAC-systemen");
+                addOption(studyProgramSelect, "Graduaat accounting administration (dag- en avond/weekendonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat accounting administration (dagonderwijs Lokeren)");
+                addOption(studyProgramSelect, "Graduaat accounting administration Aalst");
+                addOption(studyProgramSelect, "Graduaat biotechnologie");
+                addOption(studyProgramSelect, "Graduaat bouwkundig tekenen");
+                addOption(studyProgramSelect, "Graduaat elektromechanische systemen (dag- of avondonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat juridisch-administratieve ondersteuning (weekendonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat marketing- en communicatiesupport (dagonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat productiebeheer");
+                addOption(studyProgramSelect, "Graduaat programmeren (dag- en avondonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat programmeren (dagonderwijs Aalst)");
+                addOption(studyProgramSelect, "Graduaat systeem- en netwerkbeheer (dag- en avondonderwijs Gent)");
+                addOption(studyProgramSelect, "Graduaat systeem- en netwerkbeheer (dagonderwijs Aalst)");
+                addOption(studyProgramSelect, "Graduaat werforganisatie");
+                addOption(studyProgramSelect, "Graduaat winkelmanagement (dagonderwijs Gent)");
+                break;
+                // Voeg andere cases toe indien nodig
+              }
+              break;
+            // Voeg cases toe voor andere faculteiten
+          }
+        }
+  // Hulpprogrammafunctie om een optie toe te voegen aan een select-element
+  function addOption(selectElement, optionText) {
+    var option = document.createElement("option");
+    option.text = optionText;
+    selectElement.add(option);
+  }
+
+
+  function validateAndSubmit(event) {
+    event.preventDefault();
+
+    // Verzamel de ingevoerde gegevens
+    var firstName = document.getElementById("firstName").value;
+    var lastName = document.getElementById("lastName").value;
+    var rijksregisternummer = document.getElementById("rijksregisternummer").value; // Nieuwe regel toegevoegd
+    var address = document.getElementById("address").value;
+    var academiejaar = document.getElementById("academiejaar").value;
+    var opleidingSoort = document.getElementById("opleidingSoort").value;
+    var faculty = document.getElementById("faculty").value;
+    var studyProgram = document.getElementById("studyProgram").value;
+    var selectedCourses = [];
+    var courseCheckboxes = document.getElementsByName("course");
+
+    for (var i = 0; i < courseCheckboxes.length; i++) {
+        if (courseCheckboxes[i].checked) {
+            selectedCourses.push(courseCheckboxes[i].value);
+        }
+    }
+
+    var modules = document.getElementById("modules").value;
+
+    // Haal bestaande studentgegevens op uit de lokale opslag
+    var existingStudents = JSON.parse(localStorage.getItem("students")) || [];
+
+    // Sla de gegevens op in de array
+    existingStudents.push({
+        firstName: firstName,
+        lastName: lastName,
+        rijksregisternummer: rijksregisternummer, // Nieuwe regel toegevoegd
+        address: address,
+        academiejaar: academiejaar,
+        opleidingSoort: opleidingSoort,
+        faculty: faculty,
+        studyProgram: studyProgram,
+        courses: selectedCourses,
+        modules: modules
+        // Voeg hier eventuele andere gegevens toe
+    });
+
+    // Sla de geüpdatete array op in de lokale opslag
+    localStorage.setItem("students", JSON.stringify(existingStudents));
+
+    // Voeg hier eventueel verdere verwerkingslogica toe
+    
+    // Melding weergeven
+    alert("Inschrijven geslaagd!");
+
+    // Loggen naar console
+    console.log("Student succesvol ingeschreven:", existingStudents);            
+
+            // Velden leegmaken na succesvolle inschrijving
+            document.getElementById("firstName").value = "";
+            document.getElementById("lastName").value = "";
+            document.getElementById("rijksregisternummer").value = "";
+            document.getElementById("address").value = "";
+            document.getElementById("academiejaar").value = "";
+            document.getElementById("opleidingSoort").value = "";
+            document.getElementById("faculty").value = "";
+            document.getElementById("studyProgram").value = "";
+            document.getElementById("modules").value = "";
+            courseCheckboxes.forEach(function (checkbox) {
+            checkbox.checked = false;
+            });
+        }
+
+        
+
+        // Functie om naar de pagina met alle studentgegevens te gaan
+        function viewAllStudents() {
+            // Hier kun je de pagina-URL invoegen waar alle studentgegevens worden bewaard
+            window.location.href = "AlleStudenten.html";
+        }
+    </script>
+</body>
+</html>
